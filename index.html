@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>일본어 타자 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Shippori+Mincho:wght@500;700&display=swap">
+<style>
+/* Layout: one narrow column, three tabs (입력 / 모아보기 / 문제 풀기); library is a hairline list, quiz is one large prompt card. */
+:root {
+  --bg: #f3f5f9;
+  --surface: #ffffff;
+  --ink: #17203b;
+  --muted: #5b6684;
+  --line: #d8deea;
+  --accent: #2c4a8f;
+  --accent-ink: #ffffff;
+  --accent-soft: #e4eaf7;
+  --good: #1b7348;
+  --good-bg: #e0f2e8;
+  --bad: #a93229;
+  --bad-bg: #f8e3e0;
+  --font-jp: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+  --font-ui: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1424; --surface: #171d33; --ink: #e8ecf7; --muted: #9ba6c4; --line: #2b3454;
+    --accent: #8fa8ee; --accent-ink: #0f1424; --accent-soft: #232c4b;
+    --good: #6fd0a0; --good-bg: #17352a; --bad: #f09a92; --bad-bg: #3c1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1424; --surface: #171d33; --ink: #e8ecf7; --muted: #9ba6c4; --line: #2b3454;
+  --accent: #8fa8ee; --accent-ink: #0f1424; --accent-soft: #232c4b;
+  --good: #6fd0a0; --good-bg: #17352a; --bad: #f09a92; --bad-bg: #3c1f1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); line-height: 1.55; }
+.app { max-width: 720px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; }
+h1 { font-size: 1.5rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h2 { font-size: 1rem; margin: 0 0 8px; }
+.sub { color: var(--muted); margin: 4px 0 0; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.jp, .jp-line, .ptext.is-jp { font-family: var(--font-jp); }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 0 4px; margin-block: 20px 16px; border-bottom: 1px solid var(--line); }
+.tabs button { background: none; border: 0; padding: 10px 11px; color: var(--muted); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+.notice { background: var(--bad-bg); color: var(--bad); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.9rem; }
+
+.panel { display: flex; flex-direction: column; gap: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1; }
+.field label, .lbl { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.02em; }
+input[type="text"], input[type="date"], input[type="search"], input[type="number"] {
+  width: 100%; min-width: 0; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+}
+input.jp { font-family: var(--font-jp); font-size: 1.15rem; }
+.row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.primary { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 6px; padding: 11px 20px; font-weight: 700; }
+.primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.acct { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+.acct .ghost { padding: 5px 11px; font-size: 0.85rem; }
+.ghost { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 9px 14px; color: var(--ink); }
+.link { background: none; border: 0; color: var(--accent); padding: 4px 6px; font-size: 0.85rem; }
+.link.danger { color: var(--bad); }
+.notice .link { color: inherit; text-decoration: underline; font-weight: 700; }
+
+.list { list-style: none; margin: 0; padding: 0; }
+.item { padding: 14px 0; border-top: 1px solid var(--line); display: grid; gap: 2px; }
+.item:first-child { border-top: 0; }
+.jp-line { font-size: 1.25rem; font-weight: 500; overflow-wrap: anywhere; }
+.kana { color: var(--muted); font-family: var(--font-jp); overflow-wrap: anywhere; }
+.ko { overflow-wrap: anywhere; }
+.meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+.group-h { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 4px; font-size: 0.85rem; color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.group-h span { color: var(--muted); font-weight: 400; }
+.empty { border: 1px dashed var(--line); border-radius: 8px; padding: 22px 16px; color: var(--muted); text-align: center; }
+.edit-grid { display: grid; gap: 8px; padding-block: 8px; }
+
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.chip small { color: var(--muted); margin-left: 4px; }
+
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg label { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 0.9rem; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.range-count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; }
+
+.progress { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.prompt { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 24px 20px; display: grid; gap: 8px; }
+.plabel { margin: 0; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.04em; }
+.ptext { margin: 0; font-size: 1.6rem; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; text-wrap: balance; }
+.ptext.is-jp { font-size: 1.9rem; font-weight: 500; }
+.hint { color: var(--muted); font-family: var(--font-jp); min-height: 1.5em; }
+.answer { display: flex; gap: 8px; flex-wrap: wrap; }
+.answer input { flex: 1 1 240px; font-size: 1.2rem; padding: 12px 14px; }
+.answer input.jp { font-size: 1.35rem; }
+.fb { border-radius: 8px; padding: 14px 16px; display: grid; gap: 4px; }
+.fb.ok { background: var(--good-bg); color: var(--good); }
+.fb.no { background: var(--bad-bg); color: var(--bad); }
+.fb strong { font-size: 1rem; }
+.fb .ans { color: var(--ink); }
+.fb .ans .jp-line { font-size: 1.3rem; }
+.fb-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.score { font-size: 2.4rem; font-weight: 700; font-variant-numeric: tabular-nums; margin: 0; }
+.score small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+
+.bk { display: grid; gap: 10px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.bk:last-child { border-bottom: 0; }
+.bk-note { margin: 0; color: var(--muted); font-size: 0.9rem; }
+input[type="file"] { width: 100%; min-width: 0; padding: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+
+.alt-note { margin: 0; font-size: 0.8rem; color: var(--accent); overflow-wrap: anywhere; }
+
+select { width: 100%; min-width: 0; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; font: inherit; color: inherit; }
+.folder-name { font-size: 1.1rem; font-weight: 700; overflow-wrap: anywhere; }
+.badge { display: inline-block; min-width: 1.4em; padding: 0 6px; margin-left: 2px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 0.75rem; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+
+.chk { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; }
+.chk input, .pick input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex: none; }
+.pick { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.pick:first-child { border-top: 0; }
+.pk-body { display: grid; gap: 2px; min-width: 0; }
+.pk-body > span { display: block; }
+.pk-body .jp-line { font-size: 1.15rem; }
+.pk-meta { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+details.fold { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0 12px; }
+details.fold summary { cursor: pointer; padding: 10px 0; color: var(--accent); font-size: 0.9rem; }
+#toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 999px; font-size: 0.9rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#toast.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>일본어 타자 노트</h1>
+    <p class="sub" id="summary">불러오는 중…</p>
+    <div class="acct" id="acct" hidden><span id="acctText"></span><button type="button" class="ghost" id="acctBtn" hidden>구글로 로그인</button><button type="button" class="ghost" id="acctUp" hidden></button></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="메뉴">
+    <button role="tab" data-tab="add" aria-selected="true">입력</button>
+    <button role="tab" data-tab="lib" aria-selected="false">모아보기</button>
+    <button role="tab" data-tab="folder" aria-selected="false">폴더</button>
+    <button role="tab" data-tab="quiz" aria-selected="false">문제 풀기 <span class="badge" id="unsureBadge" hidden></span></button>
+    <button role="tab" data-tab="backup" aria-selected="false">백업</button>
+  </nav>
+
+  <div class="notice" id="notice" hidden><span id="noticeText"></span> <button type="button" class="link" id="noticeRetry" hidden>다시 시도</button><button type="button" class="link" id="noticePerm" hidden>권한 설정</button></div>
+
+  <section class="panel" id="p-add" aria-label="입력">
+    <form id="addForm" class="panel" autocomplete="off">
+      <p class="bk-note">정답이 여러 개면 한 칸에 쉼표(,)로 나눠 쓰세요. 예) 猫, ネコ. 퀴즈에서는 그중 하나만 맞혀도 정답이에요. 일본어 입력기를 켜면 쉼표가 、로 바뀌니, 구분할 때는 입력기를 끄고 , 또는 / 를 입력하세요.</p>
+      <div class="field">
+        <label for="fJp">일본어 문장 또는 단어</label>
+        <input type="text" id="fJp" class="jp" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="例：今日は天気がいいですね">
+        <p class="alt-note" id="altJp" hidden></p>
+      </div>
+      <div class="field">
+        <label for="fKana">히라가나 읽기</label>
+        <input type="text" id="fKana" class="jp" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="きょうはてんきがいいですね">
+        <p class="alt-note" id="altKana" hidden></p>
+      </div>
+      <div class="field">
+        <label for="fKo">해석</label>
+        <input type="text" id="fKo" lang="ko" autocomplete="off" spellcheck="false" placeholder="오늘은 날씨가 좋네요">
+        <p class="alt-note" id="altKo" hidden></p>
+      </div>
+      <div class="row">
+        <div class="field" style="max-width: 200px">
+          <label for="fDate">날짜</label>
+          <input type="date" id="fDate">
+        </div>
+        <div class="field" style="max-width: 240px">
+          <label for="fFolder">폴더</label>
+          <select id="fFolder"></select>
+        </div>
+        <button type="button" class="primary" id="saveBtn" disabled>저장</button>
+      </div>
+      <p class="alt-note" id="fFolderNote" hidden></p>
+    </form>
+    <div>
+      <h2 id="dayTitle">이 날짜에 쌓인 항목</h2>
+      <ul class="list" id="dayList"></ul>
+    </div>
+  </section>
+
+  <section class="panel" id="p-lib" aria-label="모아보기" hidden>
+    <div class="filters">
+      <div class="field"><label for="lSearch">검색</label><input type="search" id="lSearch" placeholder="일본어, 읽기, 해석"></div>
+      <div class="field"><label for="lFrom">시작일</label><input type="date" id="lFrom"></div>
+      <div class="field"><label for="lTo">종료일</label><input type="date" id="lTo"></div>
+      <div class="field"><label for="lFolder">폴더</label><select id="lFolder"></select></div>
+    </div>
+    <div id="libList"></div>
+  </section>
+
+  <section class="panel" id="p-folder" aria-label="폴더" hidden>
+    <p class="bk-note">단어를 묶어 두는 폴더예요. 입력 탭에서 저장하면 날짜 폴더(예: 2026-10-15)가 자동으로 만들어져 그 안에 담겨요. CSV로 불러온 단어는 폴더 없이 들어오니, 아래에서 골라 폴더에 넣으세요. 모아보기와 문제 풀기에서 폴더로 골라 볼 수 있어요.</p>
+    <div class="row">
+      <div class="field">
+        <label for="nfName">새 폴더 이름</label>
+        <input type="text" id="nfName" maxlength="40" autocomplete="off" placeholder="예) JLPT N2 어휘 1장">
+      </div>
+      <button type="button" class="primary" id="nfAdd" disabled>폴더 만들기</button>
+    </div>
+    <div class="bk" id="mvBox">
+      <h2>단어를 폴더에 넣기</h2>
+      <p class="bk-note">넣을 단어에 체크하거나 '전체 선택'을 누른 뒤, 옮길 폴더를 고르세요. 필터로 범위를 좁히면 '전체 선택'은 지금 보이는 단어만 골라요.</p>
+      <div class="filters">
+        <div class="field"><label for="mvSrc">지금 있는 폴더</label><select id="mvSrc"></select></div>
+        <div class="field"><label for="mvDate">날짜</label><select id="mvDate"></select></div>
+        <div class="field"><label for="mvSearch">검색</label><input type="search" id="mvSearch" placeholder="일본어, 읽기, 해석"></div>
+      </div>
+      <div class="row">
+        <div class="field" style="max-width: 260px"><label for="mvTo">옮길 폴더</label><select id="mvTo"></select></div>
+        <button type="button" class="primary" id="mvGo" disabled>옮기기</button>
+      </div>
+      <div class="row"><label class="chk"><input type="checkbox" id="mvAll" disabled> 전체 선택</label><span class="range-count" id="mvCount"></span></div>
+      <div id="mvList"></div>
+    </div>
+    <div>
+      <h2>내 폴더</h2>
+      <div id="folderList"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="p-quiz" aria-label="문제 풀기" hidden>
+    <div id="qSetup" class="panel">
+      <div class="field">
+        <span class="lbl">날짜 범위</span>
+        <div class="chips" id="qQuick"></div>
+      </div>
+      <div class="filters">
+        <div class="field"><label for="qFrom">시작일</label><input type="date" id="qFrom"></div>
+        <div class="field"><label for="qTo">종료일</label><input type="date" id="qTo"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">날짜별로 고르기</span>
+        <div class="chips" id="qDates"></div>
+      </div>
+      <div class="field" id="qFolderField" hidden>
+        <span class="lbl">폴더로 고르기 (여러 개 가능)</span>
+        <div class="chips" id="qFolders"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">모르겠어요</span>
+        <div class="chips"><button type="button" class="chip" id="qUnsure" aria-pressed="false">모르겠어요 표시한 것만 <small id="qUnsureN"></small></button></div>
+        <div class="row" style="margin-top: 4px"><button type="button" class="ghost" id="qUnsureGo" disabled>모르겠어요 전부 바로 풀기</button></div>
+        <details class="fold"><summary id="qUnsureSum">모르겠어요 목록 보기</summary><div id="unsureList"></div></details>
+      </div>
+      <div class="field">
+        <span class="lbl">문제 방식</span>
+        <div class="seg" role="radiogroup" aria-label="문제 방식">
+          <label><input type="radio" name="qdir" value="ko2jp" checked>해석 보고 일본어 쓰기</label>
+          <label><input type="radio" name="qdir" value="jp2ko">일본어 보고 해석 쓰기</label>
+          <label><input type="radio" name="qdir" value="jp2kana">일본어 보고 히라가나 쓰기</label>
+          <label><input type="radio" name="qdir" value="mix">섞어서 (해석↔일본어)</label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">문제 순서</span>
+        <div class="seg" role="radiogroup" aria-label="문제 순서">
+          <label><input type="radio" name="qord" value="random" checked>랜덤으로 섞기</label>
+          <label><input type="radio" name="qord" value="oldest">날짜 오래된 순</label>
+          <label><input type="radio" name="qord" value="newest">날짜 최근 순</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field" style="max-width: 140px">
+          <label for="qCount">문제 수</label>
+          <input type="number" id="qCount" min="1" max="200" value="10" inputmode="numeric">
+        </div>
+        <button type="button" class="primary" id="qStart" disabled>시작</button>
+      </div>
+      <p class="range-count" id="qRangeInfo"></p>
+    </div>
+    <div id="qPlay" class="panel" hidden></div>
+    <div id="qResult" class="panel" hidden></div>
+  </section>
+
+  <section class="panel" id="p-backup" aria-label="백업" hidden>
+    <div class="bk">
+      <h2>내보내기</h2>
+      <p class="range-count" id="bCount"></p>
+      <p class="bk-note">로그인하지 않았다면 이 파일에 쓴 내용은 지금 쓰는 브라우저 안에만 저장돼요. 구글로 로그인하면 클라우드에도 저장돼 폰과 PC가 동기화돼요. 브라우저 데이터를 지우거나 이 파일의 이름·위치를 바꾸면 안 보일 수 있으니, 가끔 CSV로 내려받아 두세요. 엑셀에서도 열려요. 폴더 이름도 함께 담기지만, 비어 있는 폴더는 담기지 않아요.</p>
+      <div class="row"><button type="button" class="primary" id="bExport" disabled>CSV 내려받기</button></div>
+      <p class="bk-note" id="bNoDl" hidden>이 화면에서는 파일 내려받기를 쓸 수 없어요. 브라우저에서 이 페이지를 직접 열어 보세요.</p>
+    </div>
+    <div class="bk">
+      <h2>불러오기</h2>
+      <p class="bk-note">내려받은 CSV를 고르면 항목이 복원돼요. 온라인 버전에서 내려받은 CSV도 그대로 불러올 수 있어요. 날짜, 일본어, 해석이 같은 항목은 건너뛰어요. 불러온 항목은 폴더 없이 들어오고, 필요하면 폴더 탭에서 골라 넣을 수 있어요.</p>
+      <div class="field"><label for="bFile">CSV 파일</label><input type="file" id="bFile" accept=".csv,text/csv,text/plain"></div>
+      <div id="bPreview"></div>
+      <div class="row"><button type="button" class="primary" id="bImport" disabled>불러오기 시작</button></div>
+      <p class="range-count" id="bStatus" role="status"></p>
+    </div>
+  </section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  };
+  var WD = ["일", "월", "화", "수", "목", "금", "토"];
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function ymd(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function today() { return ymd(new Date()); }
+  function daysAgo(n) { var d = new Date(); d.setDate(d.getDate() - n); return ymd(d); }
+  function fmtDate(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
+    if (!m) return s || "날짜 없음";
+    return s + " (" + WD[new Date(+m[1], +m[2] - 1, +m[3]).getDay()] + ")";
+  }
+
+  /* ---------- answer checking ---------- */
+  function strip(s) {
+    return String(s || "").normalize("NFKC").toLowerCase()
+      .replace(/[\s。、．，,.!?！？「」『』"'“”‘’~〜…・:;：；()（）\-]/g, "");
+  }
+  function toHira(s) {
+    return s.replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x60); });
+  }
+  /* Several answers can share one field, separated by , / ; | (full-width variants too).
+     Japanese fields do not split on 、 because it appears inside normal sentences. */
+  var SEP_JP = /[,，;；\/／|｜]/, SEP_KO = /[,，;；\/／|｜、]/;
+  function alts(s, isJp) {
+    var seen = {}, out = [];
+    String(s == null ? "" : s).split(isJp ? SEP_JP : SEP_KO).forEach(function (x) {
+      x = x.trim();
+      if (x && !seen[x]) { seen[x] = 1; out.push(x); }
+    });
+    return out;
+  }
+  function judge(q, text) {
+    var a = strip(text), e = q.entry;
+    if (!a) return false;
+    if (q.dir === "jp2kana") {
+      var kh = toHira(a);
+      return [e.kana].concat(alts(e.kana, true)).some(function (c) { var t = strip(c); return t && kh === toHira(t); });
+    }
+    if (q.dir === "ko2jp") {
+      var ah = toHira(a);
+      var jc = [e.jp, e.kana].concat(alts(e.jp, true), alts(e.kana, true));
+      return jc.some(function (c) { var t = strip(c); return t && (a === t || ah === toHira(t)); });
+    }
+    var kc = [e.ko].concat(alts(e.ko, false));
+    return kc.some(function (c) { var t = strip(c); return t && a === t; });
+  }
+  window.__judge = judge;
+  function hasKana(e) { return alts(e.kana, true).length > 0; }
+
+  /* ---------- state ---------- */
+  var col = null, entries = [], loaded = false, offline = false;
+  var tab = "add", editingId = null, armedId = null, armTimer = null;
+  var quiz = null, qOnlyUnsure = false;
+  var folders = [], qFolderSel = [], editingFolder = null, armedFolder = null, armFolderTimer = null, lastFolderSel = "__date__";
+  var pendingNew = false, saving = false, moving = false, mvSel = {}, mvTotal = 0, mvToSel = "__pick__";
+  var queue = Promise.resolve();
+
+  function toast(msg) {
+    var t = $("#toast");
+    t.textContent = msg; t.classList.add("on");
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("on"); }, 1800);
+  }
+  function showNotice(msg, opts) {
+    opts = opts || {};
+    $("#noticeText").textContent = msg || "";
+    $("#noticeRetry").hidden = !opts.retry;
+    $("#noticePerm").hidden = !opts.perm;
+    $("#notice").hidden = !msg;
+  }
+  function sorted() {
+    return entries.slice().sort(function (a, b) {
+      if ((a.date || "") !== (b.date || "")) return (b.date || "") < (a.date || "") ? -1 : 1;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+  }
+  function inRange(e, from, to) {
+    var d = e.date || "";
+    return (!from || d >= from) && (!to || d <= to);
+  }
+
+  /* ---------- summary ---------- */
+  function renderSummary() {
+    if (offline) { $("#summary").textContent = "저장 공간에 연결되지 않았어요"; return; }
+    if (!loaded) return;
+    var days = {}, t = today(), tc = 0;
+    entries.forEach(function (e) { days[e.date] = 1; if (e.date === t) tc++; });
+    $("#summary").textContent = "총 " + entries.length + "개 · 오늘 " + tc + "개 · " + Object.keys(days).length + "일 쌓음";
+  }
+
+  /* ---------- add tab ---------- */
+  function readForm() {
+    return { jp: $("#fJp").value.trim(), kana: $("#fKana").value.trim(), ko: $("#fKo").value.trim(), date: $("#fDate").value || today(), folder: $("#fFolder").value === "__new__" ? "" : $("#fFolder").value };
+  }
+  function updateAltNotes() {
+    [["#altJp", "#fJp", true], ["#altKana", "#fKana", true], ["#altKo", "#fKo", false]].forEach(function (x) {
+      var list = alts($(x[1]).value, x[2]), n = $(x[0]);
+      n.hidden = list.length < 2;
+      n.textContent = list.length < 2 ? "" : "정답 " + list.length + "개: " + list.join(" | ");
+    });
+  }
+  function updateSaveState() {
+    var f = readForm();
+    $("#saveBtn").disabled = offline || saving || !(f.jp && f.ko);
+    updateAltNotes();
+    updateFolderNote();
+  }
+  function updateFolderNote() {
+    var n = $("#fFolderNote"), on = $("#fFolder").value === "__date__", d = $("#fDate").value || today();
+    n.hidden = !on;
+    n.textContent = on ? "'" + d + "' 폴더가 자동으로 만들어져 거기에 저장돼요." : "";
+  }
+  function ensureDateFolder(d) {
+    var key = String(d).trim().toLowerCase();
+    var ex = folders.filter(function (x) { return String(x.name).trim().toLowerCase() === key; })[0];
+    if (ex) return Promise.resolve(ex.id);
+    return col.add({ kind: "folder", name: d, createdAt: Date.now() }).then(function (r) { return r.id; });
+  }
+  function save() {
+    if (saving) return;
+    var f = readForm();
+    if (!col || !f.jp || !f.ko) return;
+    saving = true; $("#saveBtn").disabled = true;
+    (f.folder === "__date__" ? ensureDateFolder(f.date) : Promise.resolve(f.folder)).then(function (fid) {
+      return col.add({ jp: f.jp, kana: f.kana, ko: f.ko, date: f.date, folder: fid, createdAt: Date.now(), tries: 0, right: 0 });
+    }).then(function () {
+      $("#fJp").value = ""; $("#fKana").value = ""; $("#fKo").value = "";
+      $("#fJp").focus(); toast("저장했어요");
+    }).catch(function (err) {
+      toast(err && err.code === "quota_exceeded" ? "저장 공간이 가득 찼어요" : "저장하지 못했어요. 다시 눌러 주세요");
+    }).then(function () { saving = false; updateSaveState(); });
+  }
+  function itemHtml(e, opts) {
+    opts = opts || {};
+    if (editingId === e.id) {
+      return '<li class="item" data-id="' + esc(e.id) + '"><div class="edit-grid">' +
+        '<input type="text" class="jp" lang="ja" data-f="jp" aria-label="일본어" value="' + esc(e.jp) + '">' +
+        '<input type="text" class="jp" lang="ja" data-f="kana" aria-label="히라가나" value="' + esc(e.kana) + '">' +
+        '<input type="text" lang="ko" data-f="ko" aria-label="해석" value="' + esc(e.ko) + '">' +
+        '<input type="date" data-f="date" aria-label="날짜" value="' + esc(e.date) + '">' +
+        '<select data-f="folder" aria-label="폴더">' + folderOptionsHtml(e.folder) + '</select>' +
+        '<div class="meta"><span></span><span><button class="link" data-act="save-edit">저장</button><button class="link" data-act="cancel-edit">취소</button></span></div>' +
+        '</div></li>';
+    }
+    var armed = armedId === e.id;
+    return '<li class="item" data-id="' + esc(e.id) + '">' +
+      '<div class="jp-line" lang="ja">' + esc(e.jp) + '</div>' +
+      (e.kana ? '<div class="kana" lang="ja">' + esc(e.kana) + '</div>' : '') +
+      '<div class="ko">' + esc(e.ko) + '</div>' +
+      '<div class="meta"><span>' + (e.tries ? "맞힘 " + (e.right || 0) + " / " + e.tries : "아직 풀지 않음") + (e.unsure ? " · 모르겠어요 표시" : "") + (entryFolder(e) ? " · " + esc(folderName(e.folder)) : "") + '</span><span>' +
+      '<button class="link" data-act="edit">수정</button>' +
+      '<button class="link danger" data-act="' + (armed ? "del-yes" : "del") + '">' + (armed ? "정말 삭제" : "삭제") + '</button></span></div></li>';
+  }
+  function renderDay() {
+    var d = $("#fDate").value || today();
+    var list = sorted().filter(function (e) { return e.date === d; });
+    $("#dayTitle").textContent = fmtDate(d) + " · " + list.length + "개";
+    $("#dayList").innerHTML = list.length ? list.map(itemHtml).join("") :
+      '<li class="empty">' + (loaded ? "이 날짜에는 아직 항목이 없어요. 위 칸에 첫 문장을 적어 보세요." : "불러오는 중…") + "</li>";
+  }
+
+  /* ---------- library tab ---------- */
+  function renderLib() {
+    var q = $("#lSearch").value.trim().toLowerCase(), from = $("#lFrom").value, to = $("#lTo").value;
+    var list = sorted().filter(function (e) {
+      if (!inRange(e, from, to)) return false;
+      var fsel = $("#lFolder").value;
+      if (fsel === "__none__" && entryFolder(e)) return false;
+      if (fsel && fsel !== "__none__" && entryFolder(e) !== fsel) return false;
+      if (!q) return true;
+      return (e.jp + " " + e.kana + " " + e.ko).toLowerCase().indexOf(q) !== -1;
+    });
+    if (!list.length) {
+      $("#libList").innerHTML = '<div class="empty">' + (loaded ? (entries.length ? "조건에 맞는 항목이 없어요." : "아직 저장한 항목이 없어요. 입력 탭에서 첫 항목을 추가해 보세요.") : "불러오는 중…") + "</div>";
+      return;
+    }
+    var html = "", cur = null;
+    list.forEach(function (e) {
+      if (e.date !== cur) {
+        if (cur !== null) html += "</ul>";
+        cur = e.date;
+        var n = list.filter(function (x) { return x.date === cur; }).length;
+        html += '<div class="group-h">' + esc(fmtDate(cur)) + "<span>" + n + "개</span></div><ul class=\"list\">";
+      }
+      html += itemHtml(e);
+    });
+    $("#libList").innerHTML = html + "</ul>";
+  }
+
+  /* ---------- quiz setup ---------- */
+  function qRange() { return { from: $("#qFrom").value, to: $("#qTo").value }; }
+  function qPool() { var r = qRange(); return entries.filter(function (e) { return inRange(e, r.from, r.to) && (!qOnlyUnsure || e.unsure) && inFolderSel(e); }); }
+  function chip(label, attrs, pressed, small) {
+    return '<button type="button" class="chip" aria-pressed="' + pressed + '" ' + attrs + ">" + esc(label) + (small != null ? "<small>" + small + "</small>" : "") + "</button>";
+  }
+  function renderQSetup() {
+    var r = qRange(), t = today();
+    var quick = [
+      ["오늘", t, t], ["최근 7일", daysAgo(6), t], ["최근 30일", daysAgo(29), t], ["전체", "", ""]
+    ];
+    $("#qQuick").innerHTML = quick.map(function (q) {
+      return chip(q[0], 'data-from="' + q[1] + '" data-to="' + q[2] + '"', r.from === q[1] && r.to === q[2]);
+    }).join("");
+    var counts = {};
+    entries.forEach(function (e) { counts[e.date] = (counts[e.date] || 0) + 1; });
+    var ds = Object.keys(counts).sort().reverse().slice(0, 30);
+    $("#qDates").innerHTML = ds.length ? ds.map(function (d) {
+      return chip(d.slice(5).replace("-", "/") + " " + WD[new Date(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8)).getDay()],
+        'data-from="' + d + '" data-to="' + d + '"', r.from === d && r.to === d, counts[d]);
+    }).join("") : '<span class="range-count">아직 저장한 날짜가 없어요.</span>';
+    qFolderSel = qFolderSel.filter(function (id) { return (id === "__none__" && folders.length) || folders.some(function (f) { return f.id === id; }); });
+    var fcount = {};
+    entries.forEach(function (e) { var k = entryFolder(e) || "__none__"; fcount[k] = (fcount[k] || 0) + 1; });
+    var fchips = sortedFolders().map(function (f) {
+      return chip(f.name, 'data-fid="' + esc(f.id) + '"', qFolderSel.indexOf(f.id) !== -1, fcount[f.id] || 0);
+    }).join("");
+    if (folders.length && fcount.__none__) fchips += chip("폴더 없음", 'data-fid="__none__"', qFolderSel.indexOf("__none__") !== -1, fcount.__none__);
+    $("#qFolders").innerHTML = fchips;
+    $("#qFolderField").hidden = !folders.length;
+    var pool0 = qPool(), n = pool0.length;
+    var kanaMode = document.querySelector('input[name="qdir"]:checked').value === "jp2kana";
+    var usable = kanaMode ? pool0.filter(hasKana).length : n;
+    $("#qUnsure").setAttribute("aria-pressed", String(qOnlyUnsure));
+    $("#qUnsureN").textContent = entries.filter(function (e) { return e.unsure; }).length;
+    $("#qRangeInfo").textContent = loaded ? (qOnlyUnsure ? "이 범위에서 모르겠어요 표시한 것 " : "이 범위에 ") + n + "개 있어요." + (kanaMode && usable < n ? " 히라가나가 없는 " + (n - usable) + "개는 이 방식에서 빠져요." : "") : "불러오는 중…";
+    $("#qStart").disabled = !usable;
+  }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function byDate(a, b) {
+    var x = a.date || "", y = b.date || "";
+    return x < y ? -1 : x > y ? 1 : (a.createdAt || 0) - (b.createdAt || 0);
+  }
+  function pickQuestions(pool, n, order) {
+    if (order === "oldest") return pool.slice().sort(byDate).slice(0, n);
+    if (order === "newest") return pool.slice().sort(byDate).reverse().slice(0, n);
+    return shuffle(pool.slice()).slice(0, n);
+  }
+  function startQuiz(list, dirMode, order, unsureMode) {
+    order = order || "random";
+    var base = order === "random" ? shuffle(list.slice()) : list.slice();
+    var qs = base.map(function (e) {
+      return { entry: e, dir: dirMode === "mix" ? (Math.random() < 0.5 ? "ko2jp" : "jp2ko") : dirMode, ok: null, answer: "", skipped: false };
+    });
+    quiz = { qs: qs, i: 0, phase: "ask", dirMode: dirMode, order: order, unsureMode: !!unsureMode };
+    $("#qSetup").hidden = true; $("#qResult").hidden = true; $("#qPlay").hidden = false;
+    renderPlay();
+  }
+  function renderPlay() {
+    var q = quiz.qs[quiz.i], e = q.entry, total = quiz.qs.length, pct = Math.round(quiz.i / total * 100);
+    var toKana = q.dir === "jp2kana";
+    var toJp = q.dir === "ko2jp" || toKana;      // the answer is typed with the Japanese keyboard
+    var promptJp = q.dir !== "ko2jp";            // the prompt shown is the Japanese text
+    var nAns = toKana ? alts(e.kana, true).length : alts(toJp ? e.jp : e.ko, toJp).length;
+    var html = '<div class="progress"><span>' + (quiz.i + 1) + " / " + total + '</span><div class="bar"><i style="width:' + pct + '%"></i></div>' +
+      '<button class="link" data-q="quit">그만하기</button></div>' +
+      '<div class="prompt"><p class="plabel">' + (toKana ? "히라가나로 써 보세요" : toJp ? "일본어로 써 보세요" : "뜻을 써 보세요") + (nAns > 1 ? " · 정답 " + nAns + "가지 중 하나만 쓰면 돼요" : "") + "</p>" +
+      '<p class="ptext' + (promptJp ? " is-jp" : "") + '"' + (promptJp ? ' lang="ja"' : "") + ">" + esc(promptJp ? e.jp : e.ko) + "</p>" +
+      (!toJp && e.kana ? '<p class="hint" id="qHint" lang="ja"><button class="link" data-q="hint" style="padding-left:0">히라가나 힌트 보기</button></p>' : "") +
+      "</div>";
+    if (quiz.phase === "ask") {
+      html += '<div class="answer"><input type="text" id="qIn" ' + (toJp ? 'class="jp" lang="ja"' : 'lang="ko"') +
+        ' autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="답"><button class="primary" data-q="check">확인</button>' +
+        '<button class="ghost" data-q="skip">모르겠어요</button></div>';
+    } else {
+      var ok = q.ok;
+      html += '<div class="answer"><input type="text" disabled value="' + esc(q.answer) + '" ' + (toJp ? 'class="jp"' : "") + ' aria-label="내 답"></div>' +
+        '<div class="fb ' + (ok ? "ok" : "no") + '"><strong>' + (ok ? "정답이에요" : (q.skipped ? "정답은 이거예요" : "아쉬워요")) + "</strong>" + (q.skipped ? "<span>모르겠어요 목록에 담았어요</span>" : "") +
+        '<div class="ans"><div class="jp-line" lang="ja">' + esc(e.jp) + "</div>" + (e.kana ? '<div class="kana" lang="ja">' + esc(e.kana) + "</div>" : "") +
+        '<div class="ko">' + esc(e.ko) + "</div></div>" +
+        '<div class="fb-actions"><button class="primary" id="qNext" data-q="next">' + (quiz.i + 1 === total ? "결과 보기" : "다음 문제") + "</button>" +
+        (ok ? "" : '<button class="ghost" data-q="override">맞다고 처리</button>') + "</div></div>";
+    }
+    $("#qPlay").innerHTML = html;
+    var el = quiz.phase === "ask" ? $("#qIn") : $("#qNext");
+    if (el) el.focus();
+  }
+  function checkAnswer(skip) {
+    var q = quiz.qs[quiz.i], inp = $("#qIn");
+    var text = inp ? inp.value : "";
+    if (!skip && !strip(text)) { inp && inp.focus(); return; }
+    q.answer = skip ? "" : text; q.skipped = !!skip;
+    q.ok = skip ? false : judge(q, text);
+    if (skip) flagUnsure(q.entry);
+    quiz.phase = "checked";
+    renderPlay();
+  }
+  function record(q) {
+    var e = q.entry;
+    queue = queue.then(function () {
+      var cur = entries.filter(function (x) { return x.id === e.id; })[0] || e;
+      return col.doc(e.id).update({ tries: (cur.tries || 0) + 1, right: (cur.right || 0) + (q.ok ? 1 : 0), lastQuizAt: Date.now() });
+    }).catch(function () {});
+  }
+  function flagUnsure(e) {
+    queue = queue.then(function () {
+      var cur = entries.filter(function (x) { return x.id === e.id; })[0] || e;
+      return col.doc(e.id).update({ unsure: true, skips: (cur.skips || 0) + 1, unsureAt: Date.now() });
+    }).catch(function () {});
+  }
+  function nextQuestion() {
+    record(quiz.qs[quiz.i]);
+    if (quiz.i + 1 >= quiz.qs.length) { renderResult(); return; }
+    quiz.i++; quiz.phase = "ask"; renderPlay();
+  }
+  function renderResult() {
+    var right = quiz.qs.filter(function (q) { return q.ok; });
+    var wrong = quiz.qs.filter(function (q) { return !q.ok; });
+    var html = '<div><p class="score">' + right.length + ' <small>/ ' + quiz.qs.length + " 정답</small></p></div>";
+    if (wrong.length) {
+      html += "<div><h2>다시 볼 문제</h2><ul class=\"list\">" + wrong.map(function (q) {
+        return '<li class="item"><div class="jp-line" lang="ja">' + esc(q.entry.jp) + "</div>" +
+          (q.entry.kana ? '<div class="kana" lang="ja">' + esc(q.entry.kana) + "</div>" : "") +
+          '<div class="ko">' + esc(q.entry.ko) + "</div></li>";
+      }).join("") + "</ul></div>";
+    } else {
+      html += '<div class="empty">모두 맞혔어요.</div>';
+    }
+    html += '<div class="row">' + (wrong.length ? '<button class="primary" data-q="retry">틀린 것만 다시</button>' : "") +
+      (quiz.unsureMode && right.length ? '<button class="ghost" data-q="clearright">맞힌 ' + right.length + '개 모르겠어요에서 빼기</button>' : "") +
+      '<button class="' + (wrong.length ? "ghost" : "primary") + '" data-q="again">' + (quiz.order === "random" ? "같은 문제 다시 섞어서 풀기" : "같은 문제 처음부터 다시") + "</button>" +
+      '<button class="ghost" data-q="setup">범위 다시 고르기</button></div>';
+    $("#qPlay").hidden = true; $("#qResult").hidden = false; $("#qResult").innerHTML = html;
+  }
+  function backToSetup() {
+    quiz = null;
+    $("#qPlay").hidden = true; $("#qResult").hidden = true; $("#qSetup").hidden = false;
+    renderQSetup();
+  }
+
+  /* ---------- wiring ---------- */
+  function renderAll() {
+    renderFolderSelects();
+    renderSummary();
+    if (editingId === null) { renderDay(); renderLib(); }
+    if (!quiz) renderQSetup();
+    renderUnsure();
+    renderFolders();
+    renderMoveSelects();
+    if (tab === "folder") renderMoveList();
+    renderBackup();
+  }
+  function setTab(t) {
+    tab = t;
+    document.querySelectorAll(".tabs button").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.tab === t)); });
+    $("#p-add").hidden = t !== "add"; $("#p-lib").hidden = t !== "lib"; $("#p-quiz").hidden = t !== "quiz"; $("#p-backup").hidden = t !== "backup"; $("#p-folder").hidden = t !== "folder";
+    if (t !== "folder") pendingNew = false;
+    if (t === "lib") renderLib();
+    if (t === "folder") renderMoveList();
+    if (t === "quiz" && !quiz) renderQSetup();
+  }
+  function isComposing(e) { return e.isComposing || e.keyCode === 229; }
+
+  document.querySelector(".tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-tab]"); if (b) setTab(b.dataset.tab);
+  });
+  $("#addForm").addEventListener("submit", function (e) { e.preventDefault(); });
+  ["#fJp", "#fKana", "#fKo", "#fDate"].forEach(function (id) {
+    $(id).addEventListener("input", function () { updateSaveState(); if (id === "#fDate") renderDay(); });
+  });
+  $("#fDate").addEventListener("change", renderDay);
+  $("#addForm").addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || isComposing(e) || e.target.tagName !== "INPUT") return;
+    e.preventDefault();
+    if (e.target.id === "fJp") $("#fKana").focus();
+    else if (e.target.id === "fKana") $("#fKo").focus();
+    else save();
+  });
+  $("#saveBtn").addEventListener("click", save);
+
+  function listClick(e) {
+    var btn = e.target.closest("button[data-act]"); if (!btn) return;
+    var li = btn.closest("li[data-id]"), id = li.dataset.id, act = btn.dataset.act;
+    var ent = entries.filter(function (x) { return x.id === id; })[0];
+    if (act === "edit") { editingId = id; armedId = null; renderDay(); renderLib(); }
+    else if (act === "cancel-edit") { editingId = null; renderAll(); }
+    else if (act === "save-edit") {
+      var get = function (f) { return li.querySelector('[data-f="' + f + '"]').value.trim(); };
+      var d = { jp: get("jp"), kana: get("kana"), ko: get("ko"), date: get("date") || ent.date, folder: get("folder") };
+      if (!d.jp || !d.ko) { toast("일본어와 해석은 비워둘 수 없어요"); return; }
+      col.doc(id).update(d).then(function () { editingId = null; renderAll(); toast("수정했어요"); })
+        .catch(function () { toast("수정하지 못했어요"); });
+    } else if (act === "del") {
+      armedId = id; clearTimeout(armTimer); armTimer = setTimeout(function () { armedId = null; renderAll(); }, 4000); renderDay(); renderLib();
+    } else if (act === "del-yes") {
+      armedId = null; col.doc(id).delete().then(function () { toast("삭제했어요"); }).catch(function () { toast("삭제하지 못했어요"); });
+    }
+  }
+  $("#dayList").addEventListener("click", listClick);
+  $("#libList").addEventListener("click", listClick);
+  ["#lSearch", "#lFrom", "#lTo"].forEach(function (id) { $(id).addEventListener("input", renderLib); });
+  $("#lFolder").addEventListener("change", renderLib);
+
+  $("#p-quiz").addEventListener("click", function (e) {
+    if (e.target.closest("#qUnsure")) { qOnlyUnsure = !qOnlyUnsure; renderQSetup(); return; }
+    var fc = e.target.closest(".chip[data-fid]");
+    if (fc) {
+      var fi = qFolderSel.indexOf(fc.dataset.fid);
+      if (fi >= 0) qFolderSel.splice(fi, 1); else qFolderSel.push(fc.dataset.fid);
+      renderQSetup(); return;
+    }
+    var c = e.target.closest(".chip[data-from]");
+    if (c) { $("#qFrom").value = c.dataset.from; $("#qTo").value = c.dataset.to; renderQSetup(); return; }
+    var b = e.target.closest("[data-q]"); if (!b) return;
+    var a = b.dataset.q;
+    if (a === "check") checkAnswer(false);
+    else if (a === "skip") checkAnswer(true);
+    else if (a === "next") nextQuestion();
+    else if (a === "override") { quiz.qs[quiz.i].ok = true; renderPlay(); }
+    else if (a === "hint") { var q = quiz.qs[quiz.i]; $("#qHint").textContent = q.entry.kana; var i = $("#qIn"); if (i) i.focus(); }
+    else if (a === "quit") backToSetup();
+    else if (a === "setup") backToSetup();
+    else if (a === "clearright") {
+      var cids = quiz.qs.filter(function (x) { return x.ok; }).map(function (x) { return x.entry.id; });
+      b.disabled = true;
+      queue = queue.then(async function () {
+        try { col.bulk(true); for (var k = 0; k < cids.length; k++) await col.doc(cids[k]).update({ unsure: false }); }
+        finally { col.bulk(false); }
+        toast(cids.length + "개를 모르겠어요 목록에서 뺐어요");
+      }).catch(function () { toast("처리하지 못했어요"); });
+    }
+    else if (a === "again") {
+      startQuiz(quiz.qs.map(function (q) { return q.entry; }), quiz.dirMode, quiz.order, quiz.unsureMode);
+    }
+    else if (a === "retry") {
+      var wrong = quiz.qs.filter(function (q) { return !q.ok; }).map(function (q) { return q.entry; });
+      startQuiz(wrong, quiz.dirMode, quiz.order, quiz.unsureMode);
+    }
+  });
+  $("#qPlay").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.id === "qIn" && !isComposing(e)) { e.preventDefault(); checkAnswer(false); }
+  });
+  ["#qFrom", "#qTo"].forEach(function (id) { $(id).addEventListener("input", renderQSetup); });
+  document.querySelectorAll('input[name="qdir"]').forEach(function (r) { r.addEventListener("change", renderQSetup); });
+  $("#qStart").addEventListener("click", function () {
+    var dir = document.querySelector('input[name="qdir"]:checked').value;
+    var pool = qPool();
+    if (dir === "jp2kana") pool = pool.filter(hasKana);
+    if (!pool.length) return;
+    var n = Math.max(1, Math.min(pool.length, parseInt($("#qCount").value, 10) || 10));
+    var order = document.querySelector('input[name="qord"]:checked').value;
+    startQuiz(pickQuestions(pool, n, order), dir, order, qOnlyUnsure);
+  });
+
+  /* ---------- folders ---------- */
+  function folderName(id) {
+    var f = folders.filter(function (x) { return x.id === id; })[0];
+    return f ? f.name : "";
+  }
+  function entryFolder(e) { return e.folder && folderName(e.folder) ? e.folder : ""; }
+  function sortedFolders() {
+    return folders.slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name), "ko"); });
+  }
+  function folderExists(name, exceptId) {
+    var n = String(name).trim().toLowerCase();
+    return folders.some(function (f) { return f.id !== exceptId && String(f.name).trim().toLowerCase() === n; });
+  }
+  function folderOptionsHtml(selected) {
+    return '<option value="">폴더 없음</option>' + sortedFolders().map(function (f) {
+      return '<option value="' + esc(f.id) + '"' + (f.id === selected ? " selected" : "") + ">" + esc(f.name) + "</option>";
+    }).join("");
+  }
+  function inFolderSel(e) {
+    if (!qFolderSel.length) return true;
+    return qFolderSel.indexOf(entryFolder(e) || "__none__") !== -1;
+  }
+  function validAddSel(v) { return (v === "__date__" || v === "" || folders.some(function (x) { return x.id === v; })) ? v : "__date__"; }
+  function renderFolderSelects() {
+    var f = $("#fFolder"), l = $("#lFolder"), cl = l.value;
+    f.innerHTML = '<option value="__date__">날짜 폴더 (자동)</option><option value="">폴더 없음</option>' + sortedFolders().map(function (x) {
+      return '<option value="' + esc(x.id) + '">' + esc(x.name) + "</option>";
+    }).join("") + '<option value="__new__">＋ 새 폴더 만들기…</option>';
+    lastFolderSel = validAddSel(lastFolderSel);
+    f.value = lastFolderSel;
+    l.innerHTML = '<option value="">전체 폴더</option><option value="__none__">폴더 없음</option>' + sortedFolders().map(function (x) {
+      return '<option value="' + esc(x.id) + '">' + esc(x.name) + "</option>";
+    }).join("");
+    l.value = (cl === "__none__" || folders.some(function (x) { return x.id === cl; })) ? cl : "";
+    updateFolderNote();
+  }
+  function renderFolders() {
+    var counts = {};
+    entries.forEach(function (e) { var k = entryFolder(e) || "__none__"; counts[k] = (counts[k] || 0) + 1; });
+    var html = '<ul class="list"><li class="item"><div class="folder-name">폴더 없음</div><div class="meta"><span>' + (counts.__none__ || 0) +
+      '개</span><span><button class="link" data-act="f-open" data-fid="__none__">단어 보기</button></span></div></li>';
+    sortedFolders().forEach(function (f) {
+      var n = counts[f.id] || 0;
+      if (editingFolder === f.id) {
+        html += '<li class="item" data-fid="' + esc(f.id) + '"><div class="edit-grid"><input type="text" maxlength="40" data-f="fname" aria-label="폴더 이름" value="' + esc(f.name) + '">' +
+          '<div class="meta"><span></span><span><button class="link" data-act="f-save">저장</button><button class="link" data-act="f-cancel">취소</button></span></div></div></li>';
+        return;
+      }
+      var armed = armedFolder === f.id;
+      html += '<li class="item" data-fid="' + esc(f.id) + '"><div class="folder-name">' + esc(f.name) + '</div>' +
+        '<div class="meta"><span>' + n + '개' + (f.createdAt ? ' · 만든 날 ' + esc(ymd(new Date(f.createdAt))) : '') + '</span><span>' +
+        '<button class="link" data-act="f-open">단어 보기</button><button class="link" data-act="f-rename">이름 바꾸기</button>' +
+        '<button class="link danger" data-act="' + (armed ? "f-del-yes" : "f-del") + '">' + (armed ? "정말 지우기" : "삭제") + '</button></span></div>' +
+        (armed ? '<div class="bk-note">' + "폴더만 지워지고, 안에 있는 " + n + "개는 '폴더 없음'으로 옮겨져요." + '</div>' : '') + '</li>';
+    });
+    $("#folderList").innerHTML = html + "</ul>";
+  }
+  function createFolder() {
+    var name = $("#nfName").value.trim();
+    if (!col || !name) return;
+    if (folderExists(name)) { toast("이미 있는 폴더예요"); return; }
+    $("#nfAdd").disabled = true;
+    col.add({ kind: "folder", name: name, createdAt: Date.now() }).then(function (ref) {
+      $("#nfName").value = "";
+      if (pendingNew) { $("#fFolder").value = ref.id; lastFolderSel = ref.id; pendingNew = false; updateFolderNote(); }
+      toast("폴더를 만들었어요");
+    }).catch(function () { $("#nfAdd").disabled = false; toast("폴더를 만들지 못했어요"); });
+  }
+  function saveFolderName(id, raw) {
+    var name = String(raw).trim();
+    if (!name) { toast("폴더 이름을 입력하세요"); return; }
+    if (folderExists(name, id)) { toast("이미 있는 폴더예요"); return; }
+    col.doc(id).update({ name: name }).then(function () { editingFolder = null; renderFolders(); toast("이름을 바꿨어요"); })
+      .catch(function () { toast("이름을 바꾸지 못했어요"); });
+  }
+  async function deleteFolder(id) {
+    var members = entries.filter(function (e) { return e.folder === id; });
+    try {
+      col.bulk(true);
+      for (var i = 0; i < members.length; i++) await col.doc(members[i].id).update({ folder: "" });
+      await col.doc(id).delete();
+      col.bulk(false);
+      toast("폴더를 지웠어요. 안에 있던 단어는 '폴더 없음'으로 옮겼어요");
+    } catch (err) { col.bulk(false); toast("폴더를 지우지 못했어요"); }
+  }
+  $("#nfName").addEventListener("input", function () { $("#nfAdd").disabled = offline || !$("#nfName").value.trim(); });
+  $("#nfName").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !isComposing(e)) { e.preventDefault(); createFolder(); }
+  });
+  $("#nfAdd").addEventListener("click", createFolder);
+  $("#fFolder").addEventListener("change", function () {
+    if (this.value === "__new__") {
+      this.value = validAddSel(lastFolderSel); pendingNew = true;
+      setTab("folder"); $("#nfName").focus();
+    } else { lastFolderSel = this.value; updateFolderNote(); }
+  });
+  $("#folderList").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-act]"); if (!btn || !col) return;
+    var li = btn.closest("li"), id = btn.dataset.fid || li.dataset.fid, act = btn.dataset.act;
+    if (act === "f-open") { setTab("lib"); $("#lFolder").value = id; renderLib(); }
+    else if (act === "f-rename") {
+      editingFolder = id; armedFolder = null; renderFolders();
+      var inp = $('#folderList [data-f="fname"]'); if (inp) { inp.focus(); inp.select(); }
+    }
+    else if (act === "f-cancel") { editingFolder = null; renderFolders(); }
+    else if (act === "f-save") { saveFolderName(id, li.querySelector('[data-f="fname"]').value); }
+    else if (act === "f-del") {
+      armedFolder = id; clearTimeout(armFolderTimer);
+      armFolderTimer = setTimeout(function () { armedFolder = null; renderFolders(); }, 5000);
+      renderFolders();
+    }
+    else if (act === "f-del-yes") { armedFolder = null; deleteFolder(id); }
+  });
+  $("#folderList").addEventListener("keydown", function (e) {
+    var inp = e.target.closest('[data-f="fname"]'); if (!inp || isComposing(e)) return;
+    var id = inp.closest("li").dataset.fid;
+    if (e.key === "Enter") { e.preventDefault(); saveFolderName(id, inp.value); }
+    else if (e.key === "Escape") { editingFolder = null; renderFolders(); }
+  });
+
+  /* ---------- move words into folders ---------- */
+  function mvVisible() {
+    var src = $("#mvSrc").value, d = $("#mvDate").value, q = $("#mvSearch").value.trim().toLowerCase();
+    return sorted().filter(function (e) {
+      var fo = entryFolder(e);
+      if (src === "__none__" && fo) return false;
+      if (src && src !== "__none__" && fo !== src) return false;
+      if (d && e.date !== d) return false;
+      if (!q) return true;
+      return (e.jp + " " + e.kana + " " + e.ko).toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  function renderMoveSelects() {
+    var s = $("#mvSrc"), cs = s.value, dt = $("#mvDate"), cd = dt.value, to = $("#mvTo");
+    s.innerHTML = '<option value="">전체 폴더</option><option value="__none__">폴더 없음</option>' + sortedFolders().map(function (x) {
+      return '<option value="' + esc(x.id) + '">' + esc(x.name) + "</option>";
+    }).join("");
+    s.value = (cs === "__none__" || folders.some(function (x) { return x.id === cs; })) ? cs : "";
+    var days = {};
+    entries.forEach(function (e) { if (e.date) days[e.date] = 1; });
+    dt.innerHTML = '<option value="">전체 날짜</option>' + Object.keys(days).sort().reverse().map(function (d) {
+      return '<option value="' + esc(d) + '">' + esc(fmtDate(d)) + "</option>";
+    }).join("");
+    dt.value = days[cd] ? cd : "";
+    to.innerHTML = '<option value="__pick__">폴더를 고르세요</option><option value="">폴더 없음 (폴더에서 빼기)</option>' + sortedFolders().map(function (x) {
+      return '<option value="' + esc(x.id) + '">' + esc(x.name) + "</option>";
+    }).join("");
+    mvToSel = (mvToSel === "__pick__" || mvToSel === "" || folders.some(function (x) { return x.id === mvToSel; })) ? mvToSel : "__pick__";
+    to.value = mvToSel;
+  }
+  function renderMoveList() {
+    var list = mvVisible(), vis = {};
+    list.forEach(function (e) { vis[e.id] = 1; });
+    Object.keys(mvSel).forEach(function (k) { if (!vis[k]) delete mvSel[k]; });
+    mvTotal = list.length;
+    $("#mvList").innerHTML = list.length ? list.map(function (e) {
+      return '<label class="pick"><input type="checkbox" data-id="' + esc(e.id) + '"' + (mvSel[e.id] ? " checked" : "") + '>' +
+        '<span class="pk-body"><span class="jp-line" lang="ja">' + esc(e.jp) + "</span>" +
+        (e.kana ? '<span class="kana" lang="ja">' + esc(e.kana) + "</span>" : "") +
+        '<span class="ko">' + esc(e.ko) + "</span>" +
+        '<span class="pk-meta">' + esc(fmtDate(e.date)) + " · " + (entryFolder(e) ? esc(folderName(e.folder)) : "폴더 없음") + "</span></span></label>";
+    }).join("") : '<div class="empty">' + (loaded ? (entries.length ? "조건에 맞는 단어가 없어요." : "아직 저장한 단어가 없어요.") : "불러오는 중…") + "</div>";
+    updateMoveBar();
+  }
+  function updateMoveBar() {
+    var n = Object.keys(mvSel).length, all = $("#mvAll");
+    all.disabled = !mvTotal; all.checked = mvTotal > 0 && n === mvTotal; all.indeterminate = n > 0 && n < mvTotal;
+    $("#mvCount").textContent = mvTotal ? n + " / " + mvTotal + "개 선택" : "";
+    $("#mvGo").disabled = offline || moving || !n || mvToSel === "__pick__";
+    $("#mvGo").textContent = n ? "선택한 " + n + "개 옮기기" : "옮기기";
+  }
+  async function moveSelected() {
+    var ids = Object.keys(mvSel), to = mvToSel, done = 0;
+    if (!col || !ids.length || to === "__pick__" || moving) return;
+    moving = true; $("#mvGo").disabled = true;
+    try {
+      col.bulk(true);
+      for (var i = 0; i < ids.length; i++) { await col.doc(ids[i]).update({ folder: to }); done++; }
+    } catch (err) {}
+    mvSel = {}; moving = false;
+    col.bulk(false);
+    toast(done < ids.length ? done + "개만 옮겼어요. 나머지는 다시 시도해 주세요" : done + "개를 " + (to ? "'" + folderName(to) + "' 폴더에 넣었어요" : "폴더에서 뺐어요"));
+  }
+  $("#mvList").addEventListener("change", function (e) {
+    var cb = e.target.closest('input[type="checkbox"][data-id]'); if (!cb) return;
+    if (cb.checked) mvSel[cb.dataset.id] = 1; else delete mvSel[cb.dataset.id];
+    updateMoveBar();
+  });
+  $("#mvAll").addEventListener("change", function () {
+    var on = this.checked;
+    mvSel = {};
+    if (on) mvVisible().forEach(function (e) { mvSel[e.id] = 1; });
+    document.querySelectorAll('#mvList input[type="checkbox"]').forEach(function (cb) { cb.checked = on; });
+    updateMoveBar();
+  });
+  ["#mvSrc", "#mvDate"].forEach(function (id) { $(id).addEventListener("change", renderMoveList); });
+  $("#mvSearch").addEventListener("input", renderMoveList);
+  $("#mvTo").addEventListener("change", function () { mvToSel = this.value; updateMoveBar(); });
+  $("#mvGo").addEventListener("click", moveSelected);
+
+  /* ---------- 모르겠어요 list (shown inside the quiz tab) ---------- */
+  function renderUnsure() {
+    var list = entries.filter(function (e) { return e.unsure; }).sort(function (a, b) { return (b.unsureAt || 0) - (a.unsureAt || 0); });
+    var badge = $("#unsureBadge");
+    badge.textContent = list.length ? String(list.length) : "";
+    badge.hidden = !list.length;
+    $("#qUnsureGo").disabled = !list.length;
+    $("#qUnsureSum").textContent = "모르겠어요 목록 보기 (" + list.length + "개)";
+    $("#unsureList").innerHTML = list.length ? '<ul class="list">' + list.map(function (e) {
+      return '<li class="item" data-id="' + esc(e.id) + '">' +
+        '<div class="jp-line" lang="ja">' + esc(e.jp) + '</div>' +
+        (e.kana ? '<div class="kana" lang="ja">' + esc(e.kana) + '</div>' : '') +
+        '<div class="ko">' + esc(e.ko) + '</div>' +
+        '<div class="meta"><span>모르겠어요 ' + (e.skips || 1) + '번' + (e.unsureAt ? ' · 마지막 ' + esc(ymd(new Date(e.unsureAt))) : '') + ' · 입력일 ' + esc(e.date) + (entryFolder(e) ? ' · ' + esc(folderName(e.folder)) : '') + '</span>' +
+        '<span><button class="link" data-act="unflag">목록에서 빼기</button></span></div></li>';
+    }).join("") + "</ul>" :
+      '<div class="empty">' + (loaded ? "아직 없어요. 문제를 풀다가 '모르겠어요'를 누르면 여기에 쌓여요." : "불러오는 중…") + "</div>";
+  }
+  $("#unsureList").addEventListener("click", function (e) {
+    var btn = e.target.closest('button[data-act="unflag"]');
+    if (!btn || !col) return;
+    var id = btn.closest("li[data-id]").dataset.id;
+    col.doc(id).update({ unsure: false }).then(function () { toast("목록에서 뺐어요"); }).catch(function () { toast("처리하지 못했어요"); });
+  });
+  $("#qUnsureGo").addEventListener("click", function () {
+    var pool = entries.filter(function (e) { return e.unsure; });
+    if (!pool.length) return;
+    var dir = document.querySelector('input[name="qdir"]:checked').value;
+    var order = document.querySelector('input[name="qord"]:checked').value;
+    if (dir === "jp2kana") {
+      var kept = pool.filter(hasKana);
+      if (!kept.length) { toast("히라가나가 입력된 단어가 없어요"); return; }
+      if (kept.length < pool.length) toast("히라가나가 없는 " + (pool.length - kept.length) + "개는 빼고 시작해요");
+      pool = kept;
+    }
+    startQuiz(pickQuestions(pool, pool.length, order), dir, order, true);
+  });
+
+  /* ---------- backup ---------- */
+  var dl = null, importRows = null;
+  /* backup:pure start */
+  function csvCell(v) {
+    var s = String(v == null ? "" : v);
+    if (/^[=+\-@]/.test(s)) s = "'" + s;
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  function buildCsv(list) {
+    var rows = [["날짜", "일본어", "히라가나", "해석", "맞힘", "시도", "모르겠어요표시", "모르겠어요횟수", "폴더"]];
+    list.forEach(function (e) { rows.push([e.date, e.jp, e.kana, e.ko, e.right || 0, e.tries || 0, e.unsure ? 1 : 0, e.skips || 0, folderName(e.folder)]); });
+    return "﻿" + rows.map(function (r) { return r.map(csvCell).join(","); }).join("\r\n") + "\r\n";
+  }
+  function parseCsv(text, delim) {
+    text = text.replace(/^﻿/, "");
+    var rows = [], row = [], cell = "", q = false, i, c;
+    for (i = 0; i < text.length; i++) {
+      c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === delim) { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        row.push(cell); cell = ""; rows.push(row); row = [];
+      } else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (x) { return x.trim() !== ""; }); });
+  }
+  function normDate(s, fallback) {
+    var m = /^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/.exec(String(s || "").trim());
+    return m ? m[1] + "-" + pad(+m[2]) + "-" + pad(+m[3]) : fallback;
+  }
+  function uncell(s) { return String(s == null ? "" : s).trim().replace(/^'(?=[=+\-@])/, ""); }
+  function readImport(text, fallbackDate) {
+    var first = text.replace(/^﻿/, "").split(/\r?\n/)[0] || "";
+    var delim = [",", "\t", ";"].sort(function (a, b) { return first.split(b).length - first.split(a).length; })[0];
+    var rows = parseCsv(text, delim);
+    var idx = { date: 0, jp: 1, kana: 2, ko: 3, right: 4, tries: 5, unsure: 6, skips: 7, folder: -1 };
+    if (rows.length && rows[0].some(function (h) { return /일본어/.test(h); })) {
+      var h = rows.shift().map(function (x) { return x.trim(); });
+      var find = function (re, d) { for (var k = 0; k < h.length; k++) if (re.test(h[k])) return k; return d; };
+      idx = { date: find(/날짜/, 0), jp: find(/일본어/, 1), kana: find(/히라가나|읽기/, 2), ko: find(/해석|뜻/, 3), right: find(/맞힘/, 4), tries: find(/시도/, 5), unsure: find(/모르겠어요표시/, -1), skips: find(/모르겠어요횟수/, -1), folder: find(/폴더/, -1) };
+    }
+    var out = [];
+    rows.forEach(function (r) {
+      var jp = uncell(r[idx.jp]), ko = uncell(r[idx.ko]);
+      if (!jp || !ko) return;
+      var tries = Math.max(0, parseInt(r[idx.tries], 10) || 0);
+      var right = Math.min(tries, Math.max(0, parseInt(r[idx.right], 10) || 0));
+      var skips = idx.skips >= 0 ? Math.max(0, parseInt(r[idx.skips], 10) || 0) : 0;
+      var flagged = idx.unsure >= 0 && String(r[idx.unsure]).trim() === "1";
+      out.push({ jp: jp, kana: uncell(r[idx.kana]), ko: ko, date: normDate(r[idx.date], fallbackDate), right: right, tries: tries, unsure: flagged, skips: skips, folder: idx.folder >= 0 ? uncell(r[idx.folder]) : "" });
+    });
+    return { rows: out, skipped: rows.length - out.length, hasFolder: idx.folder >= 0 };
+  }
+  function entryKeyF(e) { return entryKey(e) + "\u0001" + (e.folder || ""); }
+  function entryKey(e) { return e.date + "\u0001" + e.jp + "\u0001" + e.ko; }
+  /* backup:pure end */
+
+  function renderBackup() {
+    $("#bCount").textContent = loaded ? "저장된 항목 " + entries.length + "개" : "불러오는 중…";
+    $("#bExport").disabled = !entries.length || !dl;
+    $("#bNoDl").hidden = !loaded || !!dl;
+  }
+  function showImportPreview(text) {
+    var res = readImport(text, today()), seen = {}, fresh = [];
+    entries.forEach(function (e) { seen[entryKey(e)] = 1; });
+    res.rows.forEach(function (r) {
+      if (!seen[entryKey(r)]) { seen[entryKey(r)] = 1; fresh.push(r); }
+    });
+    importRows = fresh;
+    $("#bStatus").textContent = "";
+    if (!res.rows.length) {
+      $("#bPreview").innerHTML = '<p class="bk-note">읽을 수 있는 항목이 없어요. 이 페이지에서 내려받은 CSV인지 확인해 주세요.</p>';
+    } else {
+      var html = '<p class="bk-note">' + res.rows.length + "개를 읽었어요. 새로 추가 " + fresh.length + "개, 이미 있어서 건너뜀 " + (res.rows.length - fresh.length) + "개" +
+        (res.skipped ? ", 일본어나 해석이 비어 제외 " + res.skipped + "개" : "") + ".</p>";
+      if (fresh.length) {
+        html += '<ul class="list">' + fresh.slice(0, 3).map(function (r) {
+          return '<li class="item"><div class="jp-line" lang="ja">' + esc(r.jp) + '</div><div class="ko">' + esc(r.ko) + '</div><div class="meta"><span>' + esc(r.date) + "</span></div></li>";
+        }).join("") + "</ul>" + (fresh.length > 3 ? '<p class="bk-note">…외 ' + (fresh.length - 3) + "개</p>" : "");
+      }
+      $("#bPreview").innerHTML = html;
+    }
+    $("#bImport").disabled = !fresh.length;
+  }
+  async function runImport() {
+    if (!col || !importRows || !importRows.length) return;
+    var list = importRows, n = list.length, done = 0, failed = 0, base = Date.now(), stopped = false;
+    $("#bImport").disabled = true; $("#bFile").disabled = true;
+    if (col.bulk) col.bulk(true);
+    for (var i = 0; i < n; i++) {
+      var r = list[i];
+      try {
+        var rec = { jp: r.jp, kana: r.kana, ko: r.ko, date: r.date, createdAt: base + (n - i), tries: r.tries, right: r.right, folder: "" };
+        if (r.skips) rec.skips = r.skips;
+        if (r.unsure) { rec.unsure = true; rec.skips = Math.max(1, r.skips || 0); rec.unsureAt = base; }
+        await col.add(rec);
+        done++;
+      } catch (err) {
+        failed++;
+        if (err && err.code === "quota_exceeded") { stopped = true; break; }
+      }
+      $("#bStatus").textContent = "불러오는 중… " + (done + failed) + " / " + n;
+    }
+    if (col && col.bulk) col.bulk(false);
+    importRows = null; $("#bFile").value = ""; $("#bFile").disabled = false;
+    $("#bPreview").innerHTML = ""; $("#bImport").disabled = true;
+    $("#bStatus").textContent = (stopped ? "저장 공간이 가득 차서 멈췄어요. " : "") + done + "개를 추가했어요." + (failed && !stopped ? " " + failed + "개는 저장하지 못했어요." : "");
+  }
+  $("#bExport").addEventListener("click", function () {
+    if (!dl || !entries.length) return;
+    dl.save({ filename: "japanese-notebook-" + today() + ".csv", data: buildCsv(sorted()) })
+      .then(function () { toast("내려받기를 시작했어요"); })
+      .catch(function (err) { if (!err || err.code !== "declined") toast("내려받지 못했어요"); });
+  });
+  $("#bFile").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    if (!col || !loaded) { toast("데이터를 불러온 뒤에 다시 골라 주세요"); this.value = ""; return; }
+    f.arrayBuffer().then(function (buf) {
+      var text = "";
+      try { text = new TextDecoder("utf-8", { fatal: true }).decode(buf); }
+      catch (e) { try { text = new TextDecoder("euc-kr").decode(buf); } catch (e2) { text = ""; } }
+      showImportPreview(text);
+    }).catch(function () { $("#bStatus").textContent = "파일을 읽지 못했어요."; });
+  });
+  $("#bImport").addEventListener("click", runImport);
+
+  /* ---------- boot ---------- */
+  $("#fDate").value = today();
+  renderAll();
+  /* ---------- local storage (IndexedDB) ---------- */
+  function goOffline(msg, opts) {
+    offline = true; loaded = true; col = null;
+    showNotice(msg, opts);
+    updateSaveState(); renderAll();
+  }
+  function newId() {
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+    return "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+  function openDb() {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open("japanese-typing-notebook", 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore("entries", { keyPath: "id" }); };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+    });
+  }
+  function idbDo(db, mode, fn) {
+    return new Promise(function (res, rej) {
+      var t = db.transaction("entries", mode);
+      var req = fn(t.objectStore("entries"));
+      t.oncomplete = function () { res(req ? req.result : undefined); };
+      t.onerror = function () { rej(t.error); };
+      t.onabort = function () { rej(t.error); };
+    });
+  }
+  function makeCol(db, rows) {
+    var map = {}, bulk = false;
+    rows.forEach(function (r) { map[r.id] = r; });
+    function emit() {
+      if (bulk) return;
+      var all = Object.keys(map).map(function (k) { return map[k]; });
+      entries = all.filter(function (r) { return r.kind !== "folder"; });
+      folders = all.filter(function (r) { return r.kind === "folder"; });
+      offline = false; loaded = true; showNotice(""); updateSaveState(); renderAll();
+    }
+    function put(rec) {
+      return idbDo(db, "readwrite", function (st) { return st.put(rec); }).then(function () { map[rec.id] = rec; emit(); });
+    }
+    return {
+      bulk: function (on) { bulk = on; if (!on) emit(); },
+      add: function (d) {
+        var rec = Object.assign({ id: newId() }, d);
+        return put(rec).then(function () { return { id: rec.id }; });
+      },
+      doc: function (id) {
+        return {
+          update: function (d) {
+            if (!map[id]) return Promise.reject({ code: "invalid_argument" });
+            return put(Object.assign({}, map[id], d));
+          },
+          delete: function () {
+            return idbDo(db, "readwrite", function (st) { return st.delete(id); }).then(function () { delete map[id]; emit(); });
+          }
+        };
+      }
+    };
+  }
+  var fileSaver = {
+    save: function (o) {
+      return new Promise(function (res, rej) {
+        try {
+          var blob = new Blob([o.data], { type: "text/csv;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url; a.download = o.filename; document.body.appendChild(a); a.click();
+          setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+          res({ status: "saved" });
+        } catch (e) { rej({ code: "unavailable" }); }
+      });
+    }
+  };
+
+  /* ---------- cloud sync (Firebase) ---------- */
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDLWfRLq6ryl4GyZlIokkMAC6vUQyYeGqs",
+    authDomain: "japanese-wordbook-8f802.firebaseapp.com",
+    projectId: "japanese-wordbook-8f802",
+    storageBucket: "japanese-wordbook-8f802.firebasestorage.app",
+    messagingSenderId: "700767094322",
+    appId: "1:700767094322:web:c07b1f8b111c361f305e2b"
+  };
+  var FB_VER = "10.14.1", fb = null, fbUser = null, fbUnsub = null, mode = "local";
+  function fbLoad() {
+    if (window.__fbLoader) return window.__fbLoader();
+    var base = "https://www.gstatic.com/firebasejs/" + FB_VER + "/";
+    return Promise.all([import(base + "firebase-app.js"), import(base + "firebase-auth.js"), import(base + "firebase-firestore.js")])
+      .then(function (m) { return Object.assign({}, m[0], m[1], m[2]); });
+  }
+  function setAcct(msg) {
+    if (!FIREBASE_CONFIG) return;
+    $("#acct").hidden = false;
+    $("#acctText").textContent = msg || (fbUser
+      ? "☁ " + (fbUser.email || "로그인됨") + " · 클라우드 동기화 중"
+      : (fb ? "이 기기에만 저장 중 · 로그인하면 폰·PC가 동기화돼요" : "연결하는 중…"));
+    $("#acctBtn").textContent = fbUser ? "로그아웃" : "구글로 로그인";
+    $("#acctBtn").hidden = !fb;
+  }
+  function readLocalRows() {
+    return openDb().then(function (db) {
+      return new Promise(function (res, rej) {
+        var r = db.transaction("entries", "readonly").objectStore("entries").getAll();
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      });
+    });
+  }
+  function cleanDoc(o) {
+    var r = {};
+    Object.keys(o).forEach(function (k) { if (o[k] !== undefined) r[k] = o[k]; });
+    return r;
+  }
+  function makeCloudCol(uid) {
+    var m = fb.m, fs = fb.fs, map = {}, bulk = false, unsub = null, ready, readyRes;
+    ready = new Promise(function (res) { readyRes = res; });
+    function ref(id) { return m.doc(fs, "users", uid, "entries", id); }
+    function emit() {
+      if (bulk) return;
+      var all = Object.keys(map).map(function (k) { return map[k]; });
+      entries = all.filter(function (r) { return r.kind !== "folder"; });
+      folders = all.filter(function (r) { return r.kind === "folder"; });
+      offline = false; loaded = true; showNotice(""); updateSaveState(); renderAll();
+    }
+    unsub = m.onSnapshot(m.collection(fs, "users", uid, "entries"), function (snap) {
+      var next = {};
+      snap.forEach(function (d) { var r = d.data(); r.id = d.id; next[d.id] = r; });
+      map = next; emit(); readyRes();
+    }, function () {
+      offline = false; loaded = true;
+      showNotice("클라우드 데이터를 불러오지 못했어요. 로그인 상태와 Firestore 규칙을 확인해 주세요.");
+      renderAll(); readyRes();
+    });
+    function put(rec) {
+      map[rec.id] = rec; emit();
+      m.setDoc(ref(rec.id), cleanDoc(rec)).catch(function () { toast("클라우드에 저장하지 못했어요"); });
+      return Promise.resolve();
+    }
+    return {
+      ready: ready,
+      unsub: function () { if (unsub) unsub(); },
+      has: function (id) { return !!map[id]; },
+      upload: async function (rows) {
+        for (var i = 0; i < rows.length; i += 400) {
+          var b = m.writeBatch(fs);
+          rows.slice(i, i + 400).forEach(function (r) { b.set(ref(r.id), cleanDoc(r)); });
+          await b.commit();
+        }
+      },
+      api: {
+        bulk: function (on) { bulk = on; if (!on) emit(); },
+        add: function (d) {
+          var rec = Object.assign({ id: newId() }, d);
+          return put(rec).then(function () { return { id: rec.id }; });
+        },
+        doc: function (id) {
+          return {
+            update: function (d) {
+              if (!map[id]) return Promise.reject({ code: "invalid_argument" });
+              return put(Object.assign({}, map[id], d));
+            },
+            delete: function () {
+              delete map[id]; emit();
+              m.deleteDoc(ref(id)).catch(function () { toast("클라우드에서 지우지 못했어요"); });
+              return Promise.resolve();
+            }
+          };
+        }
+      }
+    };
+  }
+  function seenKey(uid) { return "jnb-uploaded-" + uid; }
+  function readSeen(uid) { try { return JSON.parse(localStorage.getItem(seenKey(uid)) || "[]"); } catch (e) { return []; } }
+  function writeSeen(uid, ids) { try { localStorage.setItem(seenKey(uid), JSON.stringify(ids)); } catch (e) {} }
+  async function offerUpload(uid, c) {
+    var rows;
+    try { rows = await readLocalRows(); } catch (e) { return; }
+    await c.ready;
+    if (!fbUser || fbUser.uid !== uid) return;
+    var seen = readSeen(uid), seenMap = {};
+    seen.forEach(function (id) { seenMap[id] = 1; });
+    var miss = rows.filter(function (r) { return !c.has(r.id) && !seenMap[r.id]; });
+    var b = $("#acctUp");
+    if (!miss.length) { b.hidden = true; return; }
+    b.hidden = false; b.disabled = false;
+    b.textContent = "이 기기 데이터 " + miss.length + "개 클라우드에 올리기";
+    b.onclick = async function () {
+      b.disabled = true; b.textContent = "올리는 중…";
+      try {
+        await c.upload(miss);
+        writeSeen(uid, seen.concat(miss.map(function (r) { return r.id; })));
+        b.hidden = true; toast(miss.length + "개를 올렸어요");
+      } catch (e) { b.disabled = false; b.textContent = "올리지 못했어요 · 다시 시도"; }
+    };
+  }
+  function onUser(u) {
+    if (fbUnsub) { try { fbUnsub(); } catch (e) {} fbUnsub = null; }
+    $("#acctUp").hidden = true;
+    fbUser = u || null;
+    if (!u) {
+      var was = mode; mode = "local"; setAcct();
+      if (was === "cloud") { loaded = false; entries = []; folders = []; renderAll(); connect(); }
+      return;
+    }
+    mode = "cloud"; setAcct();
+    loaded = false; offline = false; entries = []; folders = []; showNotice(""); renderAll();
+    var c = makeCloudCol(u.uid);
+    col = c.api; dl = fileSaver; fbUnsub = c.unsub;
+    offerUpload(u.uid, c);
+  }
+  async function initCloud() {
+    if (!FIREBASE_CONFIG) return;
+    setAcct();
+    try {
+      var m = await fbLoad(), app = m.initializeApp(FIREBASE_CONFIG), fs;
+      try { fs = m.initializeFirestore(app, { localCache: m.persistentLocalCache({ tabManager: m.persistentMultipleTabManager() }) }); }
+      catch (e) { fs = m.getFirestore(app); }
+      var auth = m.getAuth(app);
+      fb = { m: m, fs: fs, auth: auth };
+      setAcct();
+      m.onAuthStateChanged(auth, onUser);
+    } catch (e) { fb = null; setAcct("클라우드에 연결하지 못했어요. 지금은 이 기기에만 저장돼요."); }
+  }
+  $("#acctBtn").addEventListener("click", async function () {
+    if (!fb) return;
+    if (fbUser) { try { await fb.m.signOut(fb.auth); toast("로그아웃했어요. 이 기기에 저장된 데이터가 보여요"); } catch (e) {} return; }
+    var prov = new fb.m.GoogleAuthProvider();
+    try { await fb.m.signInWithPopup(fb.auth, prov); }
+    catch (e) {
+      var code = (e && e.code) || "";
+      if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
+        try { await fb.m.signInWithRedirect(fb.auth, prov); } catch (e2) { toast("로그인하지 못했어요"); }
+      } else if (code === "auth/unauthorized-domain") {
+        setAcct("이 주소는 Firebase 승인 도메인에 없어요. Authentication 설정의 승인된 도메인에 추가해 주세요.");
+      } else if (code !== "auth/popup-closed-by-user" && code !== "auth/cancelled-popup-request") {
+        toast("로그인하지 못했어요 (" + (code || "오류") + ")");
+      }
+    }
+  });
+  async function connect() {
+    try {
+      if (!window.indexedDB) throw new Error("no indexedDB");
+      var db = await openDb();
+      var rows = await new Promise(function (res, rej) {
+        var r = db.transaction("entries", "readonly").objectStore("entries").getAll();
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      });
+      if (mode === "cloud") return;
+      col = makeCol(db, rows);
+      dl = fileSaver;
+      try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+      entries = rows.filter(function (r) { return r.kind !== "folder"; });
+      folders = rows.filter(function (r) { return r.kind === "folder"; });
+      offline = false; loaded = true; showNotice(""); updateSaveState(); renderAll();
+    } catch (err) {
+      if (mode === "cloud") return;
+      goOffline("이 브라우저에서는 저장 공간을 열 수 없어요. 사생활 보호 창이거나 저장이 막힌 브라우저일 수 있어요. 일반 창에서 Chrome이나 Safari로 열어 주세요.", { retry: true });
+    }
+  }
+  $("#noticeRetry").addEventListener("click", function () { showNotice("연결하는 중…"); connect(); });
+  connect();
+  initCloud();
+})();
+</script>
+</body>
+</html>
